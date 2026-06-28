@@ -1,17 +1,34 @@
 import { AnimatePresence } from 'framer-motion';
-import TaskRow from './TaskRow';
-import LoadingSpinner from './LoadingSpinner';
+import TaskCard from './TaskCard';
+import TaskCardSkeleton from './TaskCardSkeleton';
 import EmptyState from './EmptyState';
 
-export default function TaskList({ tasks, loading, onUpdate, onDelete, onEdit }) {
-  if (loading) return <LoadingSpinner />;
-  if (!tasks.length) return <EmptyState message="No tasks found." />;
+export default function TaskList({ tasks, loading, onUpdate, onDelete, onEdit, filtersActive, onClearFilters }) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <TaskCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  if (!tasks.length) {
+    return (
+      <EmptyState
+        message={filtersActive ? 'No tasks match your filters.' : 'No tasks found. Create one to get started!'}
+        filtered={filtersActive}
+        onClearFilters={onClearFilters}
+      />
+    );
+  }
 
   return (
-    <div className="border-t border-mid">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
       <AnimatePresence>
         {tasks.map((task) => (
-          <TaskRow
+          <TaskCard
             key={task._id}
             task={task}
             onUpdate={onUpdate}
