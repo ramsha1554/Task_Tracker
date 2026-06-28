@@ -3,6 +3,7 @@ import { getTasks, createTask, updateTask, deleteTask } from '../services/api';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
 import Sidebar from '../components/Sidebar';
+import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 import Button from '../components/Button';
 
@@ -19,6 +20,7 @@ export default function TasksPage() {
   const [filters, setFilters] = useState(defaultFilters);
   const [formOpen, setFormOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
   const [toast, setToast] = useState({ message: '', type: 'success' });
 
   const showToast = (message, type = 'success') => {
@@ -67,13 +69,15 @@ export default function TasksPage() {
     );
   };
 
-  const handleDelete = async (id) => {
+  const handleConfirmDelete = async () => {
     try {
-      await deleteTask(id);
-      setTasks((prev) => prev.filter((t) => t._id !== id));
+      await deleteTask(confirmId);
+      setTasks((prev) => prev.filter((t) => t._id !== confirmId));
       showToast('Task deleted.');
     } catch {
       showToast('Failed to delete task.', 'error');
+    } finally {
+      setConfirmId(null);
     }
   };
 
@@ -116,12 +120,19 @@ export default function TasksPage() {
               tasks={tasks}
               loading={loading}
               onUpdate={handleUpdate}
-              onDelete={handleDelete}
+              onDelete={(id) => setConfirmId(id)}
               onEdit={handleEdit}
             />
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!confirmId}
+        message="Delete this task? This cannot be undone."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmId(null)}
+      />
 
       <Toast
         message={toast.message}

@@ -5,9 +5,9 @@ const getTasks = async (req, res, next) => {
     const { status, priority, search, sort } = req.query;
 
     const filter = {};
-    if (status) filter.status = status;
-    if (priority) filter.priority = priority;
-    if (search) filter.title = { $regex: search, $options: 'i' };
+    if (status && status !== '') filter.status = status;
+    if (priority && priority !== '') filter.priority = priority;
+    if (search && search !== '') filter.title = { $regex: search, $options: 'i' };
 
     const sortMap = {
       newest: { createdAt: -1 },
