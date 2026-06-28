@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { RiCheckboxBlankLine, RiCheckboxLine } from 'react-icons/ri';
+import { RiCheckboxBlankLine, RiCheckboxLine, RiPencilLine, RiDeleteBin6Line } from 'react-icons/ri';
 import { updateTask } from '../services/api';
 
 const priorityStyles = {
@@ -77,18 +77,22 @@ export default function TaskRow({ task, onUpdate, onDelete, onEdit }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 shrink-0">
         <button
           onClick={() => onEdit(task)}
-          className="text-xs px-2 py-1 text-muted hover:text-ink transition-colors duration-150"
+          className="p-1.5 text-muted hover:text-ink hover:bg-mid/40 rounded transition-colors duration-150"
+          title="Edit task"
+          aria-label="Edit task"
         >
-          Edit
+          <RiPencilLine size={16} />
         </button>
         <button
           onClick={() => onDelete(task._id)}
-          className="text-xs px-2 py-1 text-muted hover:text-signal transition-colors duration-150"
+          className="p-1.5 text-muted hover:text-signal hover:bg-mid/40 rounded transition-colors duration-150"
+          title="Delete task"
+          aria-label="Delete task"
         >
-          Delete
+          <RiDeleteBin6Line size={16} />
         </button>
       </div>
     </motion.div>
