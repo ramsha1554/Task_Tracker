@@ -2,12 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { getTasks, createTask, updateTask, deleteTask } from '../services/api';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
+import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
 import Button from '../components/Button';
+
+const defaultFilters = {
+  search: '',
+  status: '',
+  priority: '',
+  sort: 'newest',
+};
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState(defaultFilters);
   const [formOpen, setFormOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [toast, setToast] = useState({ message: '', type: 'success' });
@@ -19,14 +28,14 @@ export default function TasksPage() {
   const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getTasks();
+      const res = await getTasks(filters);
       setTasks(res.data);
     } catch {
       showToast('Failed to load tasks.', 'error');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     fetchTasks();
@@ -80,8 +89,8 @@ export default function TasksPage() {
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--color-paper)' }}>
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <div className="flex items-center justify-between mb-10">
           <h1 className="text-3xl" style={{ fontFamily: 'var(--font-serif)' }}>
             Tasks
           </h1>
@@ -90,20 +99,28 @@ export default function TasksPage() {
           </Button>
         </div>
 
-        <TaskForm
-          open={formOpen}
-          onClose={() => { setFormOpen(false); setEditTask(null); }}
-          onSubmit={handleSubmit}
-          editTask={editTask}
-        />
+        <div className="flex gap-10">
+          <div className="w-48 shrink-0">
+            <Sidebar filters={filters} onChange={setFilters} />
+          </div>
 
-        <TaskList
-          tasks={tasks}
-          loading={loading}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+          <div className="flex-1 min-w-0">
+            <TaskForm
+              open={formOpen}
+              onClose={() => { setFormOpen(false); setEditTask(null); }}
+              onSubmit={handleSubmit}
+              editTask={editTask}
+            />
+
+            <TaskList
+              tasks={tasks}
+              loading={loading}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
+          </div>
+        </div>
       </div>
 
       <Toast
