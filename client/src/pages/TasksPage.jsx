@@ -1,12 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getTasks, deleteTask } from '../services/api';
+import { getTasks, createTask, updateTask, deleteTask } from '../services/api';
 import TaskList from '../components/TaskList';
+import TaskForm from '../components/TaskForm';
 import Toast from '../components/Toast';
+import Button from '../components/Button';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editTask, setEditTask] = useState(null);
   const [toast, setToast] = useState({ message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -24,8 +32,24 @@ export default function TasksPage() {
     fetchTasks();
   }, [fetchTasks]);
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
+  const handleSubmit = async (data) => {
+    try {
+      if (editTask) {
+        const res = await updateTask(editTask._id, data);
+        setTasks((prev) =>
+          prev.map((t) => (t._id === editTask._id ? res.data : t))
+        );
+        showToast('Task updated.');
+      } else {
+        const res = await createTask(data);
+        setTasks((prev) => [res.data, ...prev]);
+        showToast('Task added.');
+      }
+      setFormOpen(false);
+      setEditTask(null);
+    } catch {
+      showToast('Something went wrong.', 'error');
+    }
   };
 
   const handleUpdate = (updated) => {
@@ -45,16 +69,33 @@ export default function TasksPage() {
   };
 
   const handleEdit = (task) => {
-    // wired up in next step when TaskForm is built
-    console.log('edit', task);
+    setEditTask(task);
+    setFormOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setEditTask(null);
+    setFormOpen(true);
   };
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--color-paper)' }}>
       <div className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-3xl mb-8" style={{ fontFamily: 'var(--font-serif)' }}>
-          Tasks
-        </h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl" style={{ fontFamily: 'var(--font-serif)' }}>
+            Tasks
+          </h1>
+          <Button variant="primary" onClick={handleAddNew}>
+            + Add task
+          </Button>
+        </div>
+
+        <TaskForm
+          open={formOpen}
+          onClose={() => { setFormOpen(false); setEditTask(null); }}
+          onSubmit={handleSubmit}
+          editTask={editTask}
+        />
 
         <TaskList
           tasks={tasks}
