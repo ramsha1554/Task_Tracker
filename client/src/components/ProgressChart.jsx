@@ -15,7 +15,7 @@ export default function ProgressChart({ tasks }) {
 
   const statusData = [
     { name: "To Do", value: statusCounts.todo, fill: "#8A8880" },
-    { name: "In Progress", value: statusCounts["in-progress"], fill: "#1A1A18" },
+    { name: "In Progress", value: statusCounts["in-progress"], fill: "#5B7C99" },
     { name: "Done", value: statusCounts.done, fill: "#D64F26" },
   ];
 

@@ -54,15 +54,24 @@ export default function TaskCard({ task, onUpdate, onDelete, onEdit }) {
         </button>
 
         <div className="flex-1 min-w-0">
-          <p
-            className="text-sm font-medium leading-snug"
-            style={{
-              textDecoration: isDone ? "line-through" : "none",
-              color: isDone ? "var(--color-muted)" : "var(--color-ink)",
-            }}
-          >
-            {task.title}
-          </p>
+          <div className="flex items-center gap-2">
+  {task.status === "in-progress" && (
+    <span
+      className="w-2 h-2 rounded-full shrink-0"
+      style={{ backgroundColor: "#5B7C99" }}
+      title="In Progress"
+    />
+  )}
+  <p
+    className="text-sm font-medium leading-snug"
+    style={{
+      textDecoration: isDone ? "line-through" : "none",
+      color: isDone ? "var(--color-muted)" : "var(--color-ink)",
+    }}
+  >
+    {task.title}
+  </p>
+</div>
 
           {task.description && (
             <p className="text-xs mt-1" style={{ color: "var(--color-muted)" }}>
