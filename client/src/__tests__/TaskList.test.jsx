@@ -12,14 +12,14 @@ vi.mock("../services/api", () => ({
 }));
 
 describe("TaskList", () => {
-  it("shows spinner when loading", () => {
+  it("shows skeleton cards when loading", () => {
     render(<TaskList tasks={[]} loading={true} onUpdate={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} />);
-    expect(document.querySelector(".animate-spin")).toBeInTheDocument();
+    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
   });
 
   it("shows empty state when no tasks", () => {
     render(<TaskList tasks={[]} loading={false} onUpdate={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} />);
-    expect(screen.getByText("No tasks found.")).toBeInTheDocument();
+    expect(screen.getByText(/No tasks found/)).toBeInTheDocument();
   });
 
   it("renders all tasks", () => {
